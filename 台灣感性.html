@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 4/23 閱讀日｜台灣感性日記</title>
+    <style>
+        /* --- 基礎設定 & 變數 --- */
+        :root {
+            --bg-paper: #f9f7f2;
+            --bg-card: #ffffff;
+            --text-main: #333333;
+            --text-sub: #666666;
+            --accent-green: #2c5e50; /* 復古窗框綠 */
+            --accent-orange: #d35400; /* 老招牌暖橘 */
+            --border-color: #e0e0e0;
+            --radius-md: 12px;
+            --radius-lg: 24px;
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+            --font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-paper);
+            color: var(--text-main);
+            line-height: 1.6;
+            background-image: radial-gradient(#e6e6e6 1px, transparent 1px);
+            background-size: 20px 20px; /* 模擬紙張紋理 */
+        }
+
+        /* --- 通用元件 --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1, h2, h3 {
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 3px;
+            background: var(--accent-orange);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-green);
+            color: white;
+            box-shadow: 0 4px 0 #1a3c32; /* 立體感 */
+        }
+
+        .btn-primary:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .btn-outline:hover {
+            background: rgba(44, 94, 80, 0.05);
+        }
+
+        section {
+            padding: 60px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            padding: 80px 20px 60px;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.8), var(--bg-paper));
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-green);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        }
+
+        .hero-desc {
+            font-size: 1.1rem;
+            color: var(--text-sub);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            white-space: pre-line; /* 保留換行 */
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        @media(min-width: 600px) {
+            .hero-actions {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+
+        /* --- 片刻選擇區 (Chips) --- */
+        .moment-selector {
+            background-color: var(--bg-paper);
+        }
+
+        .tag-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .tag-btn {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-sub);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .tag-btn:hover, .tag-btn.active {
+            background: var(--accent-green);
+            color: white;
+            border-color: var(--accent-green);
+            transform: translateY(-2px);
+        }
+
+        /* --- 片刻結果區 (Card) --- */
+        .moment-result {
+            display: none; /* 預設隱藏，點選後顯示 */
+            padding-top: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 裝飾線條 */
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: repeating-linear-gradient(45deg, var(--accent-green), var(--accent-green) 10px, white 10px, white 20px);
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--accent-green);
+        }
+
+        .card-narration {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 20px;
+            font-style: italic;
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .card-quote {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin: 20px 0;
+            padding: 0 10px;
+            line-height: 1.4;
+        }
+
+        /* 音訊播放器 UI */
+        .audio-player {
+            background: var(--bg-paper);
+            padding: 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            border: 1px solid #ddd;
+        }
+
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: none;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .waveform {
+            flex-grow: 1;
+            margin: 0 15px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .bar {
+            width: 4px;
+            background-color: #ccc;
+            height: 100%;
+            border-radius: 2px;
+            animation: none;
+        }
+
+        /* 假波形動畫 */
+        @keyframes wave {
+            0%, 100% { height: 20%; }
+            50% { height: 100%; }
+        }
+
+        .audio-player.playing .bar {
+            background-color: var(--accent-orange);
+            animation: wave 1s infinite ease-in-out;
+        }
+        /* 讓波形參差不齊 */
+        .bar:nth-child(odd) { animation-duration: 0.8s; }
+        .bar:nth-child(2n) { animation-duration: 1.1s; }
+        .bar:nth-child(3n) { animation-duration: 1.3s; }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: white;
+            cursor: pointer;
+        }
+
+        /* --- 片刻書單區 --- */
+        .book-list-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .book-cover {
+            height: 180px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 0.8rem;
+            position: relative;
+        }
+        
+        .badge {
+            position: absolute;
+            top: 0; left: 0;
+            background: var(--accent-orange);
+            color: white;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .badge-sub {
+            background: #666;
+        }
+
+        .book-info {
+            padding: 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .book-rec {
+            font-size: 0.85rem;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .btn-book {
+            width: 100%;
+            padding: 6px;
+            font-size: 0.8rem;
+            background: var(--bg-paper);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* --- 任務與抽獎區 --- */
+        .task-card {
+            background: white;
+            border: 2px solid var(--text-main);
+            border-radius: var(--radius-md);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .task-header {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+        }
+
+        .task-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .task-tag {
+            background: #ffeaa7;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            border: 1px solid #e6ce75;
+        }
+
+        details {
+            border-top: 1px solid #eee;
+        }
+
+        summary {
+            padding: 10px 15px;
+            cursor: pointer;
+            color: var(--accent-green);
+            font-size: 0.9rem;
+            list-style: none; /* 隱藏預設三角形 */
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        summary::-webkit-details-marker { display: none; }
+        summary::after { content: " 查看辦法 ▼"; font-size: 0.8rem;}
+        details[open] summary::after { content: " 收起 ▲"; }
+
+        .task-body {
+            padding: 15px;
+            font-size: 0.9rem;
+            color: #666;
+            background: #fdfdfd;
+        }
+
+        /* --- 全台定位閱讀步驟 --- */
+        .steps-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media(min-width: 768px) {
+            .steps-container { grid-template-columns: 1fr 1fr 1fr; }
+        }
+
+        .step-item {
+            text-align: center;
+        }
+
+        .step-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-green);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* --- XR/AR 區 --- */
+        .ar-grid {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 15px;
+        }
+
+        .ar-placeholder {
+            min-width: 120px;
+            height: 160px;
+            background: #ddd;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 2px dashed #999;
+        }
+        .ar-placeholder::after { content: 'AR 示意'; color: #777; font-size: 0.8rem; }
+
+        /* --- 城市響應區 --- */
+        .city-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        @media(min-width: 768px) {
+            .city-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .city-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .city-card:hover { transform: scale(1.02); }
+
+        .city-name { font-weight: bold; margin-bottom: 5px; color: var(--accent-green); }
+        .city-slogan { font-size: 0.8rem; color: #888; margin-bottom: 10px; }
+
+        /* --- Modal (Dialog) --- */
+        dialog {
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin: auto;
+        }
+        dialog::backdrop {
+            background: rgba(0,0,0,0.5);
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        /* --- Toast Notification --- */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: #eceae5;
+            color: #888;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <div class="container">
+            <h1>2026 4/23 閱讀日<br>台灣感性日記</h1>
+            <p class="hero-desc">台灣的感性，常常藏在不被特別命名的日常。
+            雨停前的騎樓、通勤的車窗、夜市的人聲，明明天天遇到，卻也最容易被我們忽略。
+            今天選一個片刻，先聽 30 秒，再替自己挑一本書，慢慢讀回來。</p>
+            
+            <div class="hero-actions">
+                <a href="#moment-section" class="btn btn-primary">寫下今天的片刻</a>
+                <button class="btn btn-outline" onclick="openStepModal()">看免費閱讀步驟</button>
+            </div>
+        </div>
+    </header>
+
+    <section id="moment-section" class="moment-selector">
+        <div class="container">
+            <h2 class="section-title">今天，你想到了哪個畫面？</h2>
+            <div class="tag-grid" id="tagGrid">
+                </div>
+
+            <div id="resultArea" class="moment-result">
+                <div class="result-card">
+                    <h3 class="card-title" id="resTitle">雨天騎樓</h3>
+                    <div class="card-narration" id="resNarration">
+                        「機車騎士急忙穿雨衣的摩擦聲，伴隨屋簷落下的水滴節奏，這是台北最潮濕也最溫柔的交響樂。」
+                    </div>
+                    
+                    <div class="audio-player" id="audioPlayer">
+                        <button class="play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+                        <div class="waveform" id="waveform">
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                            <div class="bar"></div>
+                        </div>
+                        <span style="font-size: 0.8rem; color: #888;" id="audioStatus">00:30</span>
+                    </div>
+
+                    <div class="card-quote" id="resQuote">
+                        「雨下給富人，也下給窮人；下給義人，也下給不義的人。」
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="btn-sm" onclick="copyQuote()">複製短句</button>
+                        <button class="btn-sm" onclick="shareCard()">分享這張卡</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2 class="section-title">把片刻放進書裡</h2>
+            <div class="book-list-container">
+                <div class="book-card">
+                    <div class="book-cover"><span class="badge">4/23 免費讀</span>封面</div>
+                    <div class="book-info">
+                        <div class="book-rec">這本很適合雨天閱讀，安靜又深刻。</div>
+                        <button class="btn-book" onclick="alert('將前往內容頁（示意）')">立即閱讀</button>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <div class="book-cover"><span class="badge">4/23 免費讀</span>封面</div>
+                    <div class="book-info">
+                        <div class="book-rec">通勤時讀這本，讓擁擠變得不重要。</div>
+                        <button class="btn-book" onclick="alert('將前往內容頁（示意）')">立即閱讀</button>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <div class="book-cover"><span class="badge">4/23 免費讀</span>封面</div>
+                    <div class="book-info">
+                        <div class="book-rec">夜深人靜時，文字會特別大聲。</div>
+                        <button class="btn-book" onclick="alert('將前往內容頁（示意）')">立即閱讀</button>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <div class="book-cover"><span class="badge badge-sub">延伸收藏</span>封面</div>
+                    <div class="book-info">
+                        <div class="book-rec">如果你喜歡剛剛的短句，別錯過這本。</div>
+                        <button class="btn-book" onclick="alert('將前往內容頁（示意）')">查看書籍</button>
+                    </div>
+                </div>
+                <div class="book-card">
+                    <div class="book-cover"><span class="badge badge-sub">延伸收藏</span>封面</div>
+                    <div class="book-info">
+                        <div class="book-rec">一本關於城市縫隙的攝影集。</div>
+                        <button class="btn-book" onclick="alert('將前往內容頁（示意）')">查看書籍</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container" style="max-width: 600px;">
+            <h2 class="section-title">完成今天的小任務</h2>
+            
+            <div class="task-card">
+                <div class="task-header">
+                    <div>
+                        <div class="task-title">閱讀挑戰：滿 5 分鐘</div>
+                        <small>主獎：電子書閱讀器 x 3</small>
+                    </div>
+                    <span class="task-tag">主獎</span>
+                </div>
+                <details>
+                    <summary></summary>
+                    <div class="task-body">
+                        活動期間內，選取任一片刻並進入書籍閱讀滿 5 分鐘，即符合抽獎資格。
+                    </div>
+                </details>
+            </div>
+
+            <div class="task-card">
+                <div class="task-header">
+                    <div>
+                        <div class="task-title">AR 拍貼互動</div>
+                        <small>加碼：專屬書封悠遊卡</small>
+                    </div>
+                    <span class="task-tag">互動</span>
+                </div>
+                <details>
+                    <summary></summary>
+                    <div class="task-body">
+                        使用下方的 AR 濾鏡拍下你的閱讀角落，上傳 IG 限動並 Tag 我們。
+                    </div>
+                </details>
+            </div>
+
+            <div class="task-card">
+                <div class="task-header">
+                    <div>
+                        <div class="task-title">滿額書蟲禮</div>
+                        <small>購書滿 500 元贈送</small>
+                    </div>
+                    <span class="task-tag">會員</span>
+                </div>
+                <details>
+                    <summary></summary>
+                    <div class="task-body">
+                        活動當日購書滿額，系統自動派送 50 元購書金（限下次使用）。
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2 class="section-title">全台定位免費閱讀｜3 步驟</h2>
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-icon">1</div>
+                    <h3>開啟 GPS 定位</h3>
+                    <p>確認手機已開啟定位服務</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-icon">2</div>
+                    <h3>點擊「現在位置」</h3>
+                    <p>系統自動偵測所在城市</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-icon">3</div>
+                    <h3>領取專屬書籍</h3>
+                    <p>解鎖該縣市限定免費書單</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2 class="section-title">把片刻拍進現實</h2>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <button class="btn btn-primary" onclick="showToast('已開啟相機（示意）')">📷 開啟 AR 拍貼</button>
+            </div>
+            <div class="ar-grid">
+                <div class="ar-placeholder"></div>
+                <div class="ar-placeholder"></div>
+                <div class="ar-placeholder"></div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2 class="section-title">翻翻別人的城市日記</h2>
+            <div class="city-grid">
+                <div class="city-card" onclick="openCityLink()">
+                    <div class="city-name">台北感性</div>
+                    <div class="city-slogan">盆地裡的潮濕與繁忙</div>
+                    <button class="btn-sm">前往響應</button>
+                </div>
+                <div class="city-card" onclick="openCityLink()">
+                    <div class="city-name">台南感性</div>
+                    <div class="city-slogan">甜味與老房子的光影</div>
+                    <button class="btn-sm">前往響應</button>
+                </div>
+                <div class="city-card" onclick="openCityLink()">
+                    <div class="city-name">台中感性</div>
+                    <div class="city-slogan">陽光灑在寬闊的街道</div>
+                    <button class="btn-sm">前往響應</button>
+                </div>
+                <div class="city-card" onclick="openCityLink()">
+                    <div class="city-name">高雄感性</div>
+                    <div class="city-slogan">海港的風與熱情</div>
+                    <button class="btn-sm">前往響應</button>
+                </div>
+                <div class="city-card" onclick="openCityLink()">
+                    <div class="city-name">花蓮感性</div>
+                    <div class="city-slogan">山與海的對話</div>
+                    <button class="btn-sm">前往響應</button>
+                </div>
+                <div class="city-card" onclick="openCityLink()">
+                    <div class="city-name">台東感性</div>
+                    <div class="city-slogan">慢下來的呼吸節奏</div>
+                    <button class="btn-sm">前往響應</button>
+                </div>
+                <div class="city-card" onclick="openCityLink()">
+                    <div class="city-name">宜蘭感性</div>
+                    <div class="city-slogan">水田倒映的日常</div>
+                    <button class="btn-sm">前往響應</button>
+                </div>
+                <div class="city-card" onclick="openCityLink()">
+                    <div class="city-name">嘉義感性</div>
+                    <div class="city-slogan">木造建築的溫潤氣味</div>
+                    <button class="btn-sm">前往響應</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>2026 4/23 閱讀日 活動辦法 | 隱私權政策 | 聯絡我們</p>
+        <p style="margin-top: 10px; font-size: 0.7rem;">Mockup designed for demonstration.</p>
+    </footer>
+
+    <dialog id="stepModal">
+        <button class="close-modal" onclick="closeStepModal()">×</button>
+        <h2 style="text-align: center; margin-bottom: 20px;">免費閱讀步驟</h2>
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-icon">1</div>
+                <p>開啟定位</p>
+            </div>
+            <div class="step-item">
+                <div class="step-icon">2</div>
+                <p>偵測位置</p>
+            </div>
+            <div class="step-item">
+                <div class="step-icon">3</div>
+                <p>領取書單</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-primary" onclick="closeStepModal()">我知道了</button>
+        </div>
+    </dialog>
+
+    <div id="toast">已複製到剪貼簿</div>
+
+    <script>
+        // 片刻資料庫
+        const moments = [
+            { id: 1, title: "雨天騎樓", text: "機車騎士急忙穿雨衣的摩擦聲，伴隨屋簷落下的水滴節奏，這是台北最潮濕也最溫柔的交響樂。", quote: "雨下給富人，也下給窮人；下給義人，也下給不義的人。" },
+            { id: 2, title: "通勤車窗", text: "額頭靠在微震的玻璃上，看著窗外倒退的風景，這是整天唯一屬於自己的放空時刻。", quote: "移動不只是為了抵達，更是為了離開。" },
+            { id: 3, title: "夜市人聲", text: "鐵板滋滋作響，老闆的吆喝聲與遠處的彈珠台音效，交織成台灣最生猛的生命力。", quote: "熱鬧是他們的，但我什麼也不缺。" },
+            { id: 4, title: "回家路上", text: "路燈把影子拉得很長，便利商店的門鈴聲響起，手裡的晚餐還是熱的。", quote: "家不是地點，而是一段溫暖的歸途。" },
+            { id: 5, title: "清晨街口", text: "空氣裡有淡淡的豆漿味，紅綠燈孤獨地變換，城市還在半夢半醒之間。", quote: "萬物皆有裂縫，那是光照進來的地方。" },
+            { id: 6, title: "午後公園", text: "老人家收音機裡的日本演歌，混著小孩的尖叫聲，樹影斑駁地落在長椅上。", quote: "偷得浮生半日閒。" },
+            { id: 7, title: "深夜超商", text: "冷氣運轉的低鳴，店員補貨的塑膠籃碰撞聲，這裡是都市遊魂的避風港。", quote: "這城市不睡，我們便有了陪伴。" },
+            { id: 8, title: "海邊風", text: "海浪拍打消波塊的重低音，風把頭髮吹得凌亂，鹹味黏在皮膚上。", quote: "面向大海，春暖花開。" },
+            { id: 9, title: "巷口早餐", text: "煎蛋餅的鍋鏟聲與阿姨記憶力驚人的點餐覆誦，喚醒了還沒開機的大腦。", quote: "早安，是這世界對你的第一聲問候。" },
+            { id: 10, title: "台鐵月台", text: "廣播傳來列車誤點的消息，響鈴聲催促著離別與重逢，便當叫賣聲忽遠忽近。", quote: "人生就是不斷的抵達與出發。" },
+            { id: 11, title: "巷弄光影", text: "兩棟公寓間的一線天，陽光在下午三點準時經過，貓咪伸了個懶腰。", quote: "美存在於你用心凝視的片刻。" },
+            { id: 12, title: "等人", text: "手錶看了三次，觀察路人的穿搭第五次，期待與焦慮在心裡拔河。", quote: "等待也是一種相遇的方式。" }
+        ];
+
+        // 初始化標籤
+        const tagGrid = document.getElementById('tagGrid');
+        moments.forEach(m => {
+            const btn = document.createElement('button');
+            btn.className = 'tag-btn';
+            btn.innerText = m.title;
+            btn.onclick = () => selectMoment(m, btn);
+            tagGrid.appendChild(btn);
+        });
+
+        // 選擇片刻邏輯
+        function selectMoment(moment, btnElement) {
+            // 更新按鈕狀態
+            document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // 更新內容
+            document.getElementById('resTitle').innerText = moment.title;
+            document.getElementById('resNarration').innerText = `「${moment.text}」`;
+            document.getElementById('resQuote').innerText = `「${moment.quote}」`;
+
+            // 重置播放器
+            stopAudio();
+
+            // 顯示並捲動
+            const resultArea = document.getElementById('resultArea');
+            resultArea.style.display = 'block';
+            setTimeout(() => {
+                resultArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        // 播放器邏輯
+        let isPlaying = false;
+        function togglePlay() {
+            const player = document.getElementById('audioPlayer');
+            const btn = document.getElementById('playBtn');
+            const status = document.getElementById('audioStatus');
+            
+            if (isPlaying) {
+                stopAudio();
+            } else {
+                isPlaying = true;
+                player.classList.add('playing');
+                btn.innerText = '❚❚';
+                status.innerText = '正在播放...';
+            }
+        }
+
+        function stopAudio() {
+            isPlaying = false;
+            const player = document.getElementById('audioPlayer');
+            const btn = document.getElementById('playBtn');
+            const status = document.getElementById('audioStatus');
+            player.classList.remove('playing');
+            btn.innerText = '▶';
+            status.innerText = '00:30';
+        }
+
+        // 複製短句
+        function copyQuote() {
+            const text = document.getElementById('resQuote').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('已複製短句');
+            });
+        }
+
+        // 分享
+        function shareCard() {
+            // 模擬分享行為
+            if (navigator.share) {
+                // 示意：若瀏覽器支援原生分享
+                // navigator.share(...)
+                showToast('已喚起分享選單');
+            } else {
+                showToast('已準備分享連結');
+            }
+        }
+
+        // Modal 邏輯
+        const modal = document.getElementById('stepModal');
+        function openStepModal() {
+            modal.showModal();
+        }
+        function closeStepModal() {
+            modal.close();
+        }
+
+        // Toast 邏輯
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.className = 'show';
+            setTimeout(() => { toast.className = toast.className.replace('show', ''); }, 3000);
+        }
+
+        // 外部連結示意
+        function openCityLink() {
+            window.open('', '_blank'); // 這裡只開空白頁示意
+            showToast('正在前往該城市頁面...');
+        }
+    </script>
+</body>
+</html>
